@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.devMode" value="true" />
+	<!-- set the struts.objectFactory -->
+	<constant name="struts.objectFactory" value="spring" />
+	<!-- To change the wiring mode -->
+	<constant name="struts.objectFactory.spring.autoWire" value="type"></constant>
+
+	<package name="default" namespace="/" extends="struts-default">
+		<interceptors>
+			<interceptor name="methodInterceptor" class="com.dyr.team1.xms.amsw.interceptor.MethodInterceptor"/>
+			<interceptor-stack name="myStack">
+				<interceptor-ref name="defaultStack"/>
+				<interceptor-ref name="methodInterceptor">
+					<param name="excludeMethods">toLogin,doLogin</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		
+		<default-interceptor-ref name="myStack"/>
+		
+		<global-results>
+			<result name="login" type="redirect">/login.jsp</result>
+			<!-- <result name="error" type="redirect">/errorPage.jsp</result> -->
+		</global-results>
+		
+		<global-exception-mappings>
+			<exception-mapping result="error" exception="java.lang.Exception"/>
+		</global-exception-mappings>
+		
+		<action name="admin_op_*" class="adminOpAction" method="{1}">
+			<result name="doLogin_success">/WEB-INF/page/admin/main.jsp</result>
+			
+			<result name="toModifyPass_success">/WEB-INF/page/admin/modifyPass.jsp</result>
+			<result name="doModifyPass_success" type="redirectAction">admin_op_toLogin</result>
+			
+			<result name="toGetOp_success">/WEB-INF/page/admin/showAllOp.jsp</result>
+			<result name="toAddOp_success">/WEB-INF/page/admin/addOp.jsp</result>
+			<result name="doAddOp_success" type="redirectAction">admin_op_toGetOp</result>
+			
+			<result name="toLendAsset_success">/WEB-INF/page/admin/lendAsset.jsp</result>
+			<result name="doLendAsset_success">/WEB-INF/page/admin/main.jsp</result>
+			
+			<result name="toBackAsset_success">/WEB-INF/page/admin/backAsset.jsp</result>
+			<result name="doBackAsset_success">/WEB-INF/page/admin/main.jsp</result>
+			
+			<result name="toDataCount_success">/WEB-INF/page/admin/showAllData.jsp</result>
+			
+			<result name="toHelp_success">/WEB-INF/page/admin/help.jsp</result>
+		</action>
+		
+		<action name="admin_cate_*" class="adminCateAction" method="{1}">
+			<result name="toAddCate_success">/WEB-INF/page/admin/addCate.jsp</result>
+			<result name="toModifyCate_success">/WEB-INF/page/admin/updateCate.jsp</result>
+			<result name="toGetCate_success">/WEB-INF/page/admin/showAllCate.jsp</result>
+			<result name="doAddCate_success" type="redirectAction">admin_cate_toGetCate</result>
+			<result name="doRemoveCate_success" type="redirectAction">admin_cate_toGetCate</result>
+			<result name="doModifyCate_success" type="redirectAction">admin_cate_toGetCate</result>
+		</action>
+		
+		<action name="admin_asset_*" class="adminAssetAction" method="{1}">
+			<result name="toAddAsset_success">/WEB-INF/page/admin/addAsset.jsp</result>
+			<result name="toModifyAsset_success">/WEB-INF/page/admin/updateAsset.jsp</result>
+			<result name="toGetAsset_success">/WEB-INF/page/admin/showAllAsset.jsp</result>
+			<result name="doAddAsset_success" type="redirectAction">admin_asset_toGetAsset</result>
+			<result name="doRemoveAsset_success" type="redirectAction">admin_asset_toGetAsset</result>
+			<result name="doModifyAsset_success" type="redirectAction">admin_asset_toGetAsset</result>
+		</action>
+		
+		<action name="admin_emp_*" class="adminEmpAction" method="{1}">
+			<result name="toAddEmp_success">/WEB-INF/page/admin/addEmp.jsp</result>
+			<result name="toModifyEmp_success">/WEB-INF/page/admin/updateEmp.jsp</result>
+			<result name="toGetEmp_success">/WEB-INF/page/admin/showAllEmp.jsp</result>
+			<result name="doAddEmp_success" type="redirectAction">admin_emp_toGetEmp</result>
+			<result name="doRemoveEmp_success" type="redirectAction">admin_emp_toGetEmp</result>
+			<result name="doModifyEmp_success" type="redirectAction">admin_emp_toGetEmp</result>
+		</action>
+		
+	</package>
+
+</struts>

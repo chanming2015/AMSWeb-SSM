@@ -1,0 +1,70 @@
+.whole{
+	width: 1024px;
+	height: 768px;
+	margin: auto;
+}
+
+.top{
+	width: 1022px;
+	height: 78px;
+	border: 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+.main{
+	width: 1024px;
+	height: 688px;
+}
+
+.left{
+	width: 178px;
+	height: 687px;
+	float: left;
+	border: 1px;
+	border-top: 0px;
+	border-color: black;
+	border-style: solid;
+}
+
+.right{
+	width: 843px;
+	height: 687px;
+	float: right;
+	border: 1px;
+	border-top: 0px;
+	border-left:0px;
+	border-color: black;
+	border-style: solid;
+}
+
+.title{
+	text-align: center;
+	font-size: 35px;
+}
+
+.whole form table{
+	margin: auto;
+}
+
+.show table{
+	border: 2px;
+	border-style: solid;
+	width: 600px;
+	text-align: center;
+}
+
+.show table tr{
+	height: 50px;
+}
+
+.show table tr td{
+	border: 1px;
+	border-style: solid;
+	padding: 10px;
+}
+
+
+
+
+

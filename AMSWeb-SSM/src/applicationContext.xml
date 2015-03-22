@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 配置了一个数据库连接池 -->
+	 <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+        <property name="url" value="jdbc:sqlserver://127.0.0.1:1433;database=ASSETDB"/>
+        <property name="username" value="sa"/>
+        <property name="password" value="123456"/>
+    </bean>
+    
+    <!-- MyBatis的SessionFactory类 -->
+    <bean id="mySessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="myDataSource"/>
+    </bean>
+    
+    <!-- 数据访问层 -->
+     <bean id="assetDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.AssetDAO"/>
+    </bean>
+    
+    <bean id="backDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.BackDAO"/>
+    </bean>
+    
+    <bean id="categoryDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.CategoryDAO"/>
+    </bean>
+    
+    <bean id="employeeDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.EmployeeDAO"/>
+    </bean>
+    
+    <bean id="lendDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.LendDAO"/>
+    </bean>
+    
+    <bean id="menuDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.MenuDAO"/>
+    </bean>
+    
+    <bean id="operatorDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.OperatorDAO"/>
+    </bean>
+    
+    <bean id="roleMenuDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="mySessionFactory"/>
+        <property name="mapperInterface" value="com.dyr.team1.xms.amsw.dao.RoleMenuDAO"/>
+    </bean>
+    
+    <!-- similarly, don't forget the PlatformTransactionManager -->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="myDataSource"/>
+    </bean>
+    
+    <!-- the transactional advice (what 'happens'; see the <aop:advisor/> bean below) -->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <!-- the transactional semantics... -->
+        <tx:attributes>
+            <!-- all methods starting with 'get' are read-only -->
+            <tx:method name="get*" read-only="true"/>
+            <!-- other methods use the REQUIRED transaction settings (see below) -->
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="remove*" propagation="REQUIRED"/>
+            <tx:method name="modify*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+    
+    <!-- ensure that the above transactional advice runs for any execution
+        of an operation defined by the FooService interface -->
+    <aop:config>
+        <aop:pointcut id="allService" expression="execution(* com.dyr.team1.xms.amsw.service.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="allService"/>
+    </aop:config>
+    
+    <!-- 业务层 -->
+    <bean id="operatorService" class="com.dyr.team1.xms.amsw.service.OperatorService">
+    	<property name="operatorDAO" ref="operatorDAO"></property>
+    	<property name="roleMenuDAO" ref="roleMenuDAO"></property>
+    	<property name="categoryDAO" ref="categoryDAO"></property>
+    	<property name="assetDAO" ref="assetDAO"></property>
+    	<property name="employeeDAO" ref="employeeDAO"></property>
+    	<property name="lendDAO" ref="lendDAO"></property>
+    	<property name="backDAO" ref="backDAO"></property>
+    </bean>
+    
+    <!-- 控制器 -->
+     <bean id="baseAction" class="com.dyr.team1.xms.amsw.web.BaseAction" scope="prototype">
+    	<property name="operatorService" ref="operatorService"></property>
+    </bean>
+    
+    <bean id="adminOpAction" class="com.dyr.team1.xms.amsw.web.AdminOpAction" parent="baseAction" lazy-init="true" scope="prototype" >
+    </bean>
+    
+    <bean id="adminCateAction" class="com.dyr.team1.xms.amsw.web.AdminCateAction" parent="baseAction" lazy-init="true" scope="prototype">
+    </bean>
+    
+     <bean id="adminAssetAction" class="com.dyr.team1.xms.amsw.web.AdminAssetAction" parent="baseAction" lazy-init="true" scope="prototype">
+    </bean>
+    
+    <bean id="adminEmpAction" class="com.dyr.team1.xms.amsw.web.AdminEmpAction" parent="baseAction" lazy-init="true" scope="prototype">
+    </bean>
+    
+</beans>
